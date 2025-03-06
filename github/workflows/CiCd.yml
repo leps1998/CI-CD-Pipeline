@@ -1,25 +1,21 @@
-name: CI/CD Pipeline
+name: Docker CI/CD
 
 on:
   push:
     branches:
-      - main  # Se ejecuta en cada push a main
+      - main  # Se ejecuta cuando subes cambios a main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout del código
-      uses: actions/checkout@v3
+      - name: Clonar el repositorio
+        uses: actions/checkout@v3
 
-    - name: Configurar entorno Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      - name: Iniciar Docker Build
+        run: docker build -t mi-imagen-docker .
 
-    - name: Instalar dependencias
-      run: npm install
+      - name: Subir imagen a Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Ejecutar pruebas
-      run: npm test
